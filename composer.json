@@ -1,6 +1,5 @@
 {
     "name": "multiotp/smsgateway",
-    "version": "1.0.2",
     "type": "library",
     "keywords": ["sms","gateway","android"],
     "description": "Flat-file based SMS gateway PHP class using an open source Android app",
