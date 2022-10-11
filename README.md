@@ -7,7 +7,7 @@
 This software is distributed under the [ LGPL-3.0-only](https://www.gnu.org/licenses/lgpl-3.0.html) license. Please read [LICENSE](https://github.com/multiOTP/SMSGateway/blob/master/LICENSE) for information on the software availability and distribution.
 
 ## Installation & loading
-SMSGateway will be available on [Packagist](https://packagist.org/packages/multiOTP/SMSGateway) (using semantic versioning), and installation via [Composer](https://getcomposer.org) is the recommended way to install SMSGateway. Just add this line to your `composer.json` file:
+SMSGateway is available on [Packagist](https://packagist.org/packages/multiOTP/SMSGateway) (using semantic versioning), and installation via [Composer](https://getcomposer.org) is the recommended way to install SMSGateway. Just add this line to your `composer.json` file:
 
 ```json
 "multiotp/smsgateway": "^1.0"
@@ -70,7 +70,8 @@ require 'vendor/autoload.php';
 
 function new_message_handling($array) {
   // Handling $array of new received messages
-  // [["id"           => "message_id",
+  // [["device_id"    => "device_id",
+  //   "id"           => "message_id",
   //   "from"         => "from_phone",
   //   "sms_sent"     => "sms_sent_timestamp",
   //   "sms_received" => "sms_received_timestamp",

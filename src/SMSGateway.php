@@ -16,10 +16,10 @@
  *
  * The Readme file contains additional information.
  *
- * PHP 7.4.0 or higher is supported.
+ * PHP 7.0.0 or higher is supported.
  *
  * @author    Andre Liechti (SysCo systemes de communication sa) <info@multiotp.net>
- * @version   1.0.2
+ * @version   1.0.3
  * @date      2022-10-11
  * @since     2022-09-10
  * @copyright (c) 2022 SysCo systemes de communication sa
@@ -145,7 +145,7 @@
  *
  * Change Log
  *
- *   2022-10-11 1.0.2 SysCo/al First public version
+ *   2022-10-11 1.0.3 SysCo/al First public version
  *   2022-09-10 0.0.1 SysCo/al Initial implementation
  *********************************************************************/
 
@@ -163,7 +163,7 @@ class SMSGateway
    *
    * @var string
    */
-  const VERSION = '1.0.2';
+  const VERSION = '1.0.3';
   
   /**
    * The device timeout in seconds.
@@ -246,6 +246,9 @@ class SMSGateway
     $data_path
   ) {
     if (file_exists($data_path)) {
+      if (substr($data_path, -strlen(DIRECTORY_SEPARATOR)) != DIRECTORY_SEPARATOR) {
+        $data_path.= DIRECTORY_SEPARATOR;
+      }
       $this->DataPath = $data_path;
       return true;
     } else {
