@@ -1,0 +1,28 @@
+{
+    "name": "multiotp/smsgateway",
+    "version": "1.0.2",
+    "type": "library",
+    "keywords": ["sms","gateway","android"],
+    "description": "Flat-file based SMS gateway PHP class using an open source Android app",
+    "authors": [
+        {
+            "name": "Andre Liechti (SysCo systemes de communication sa)",
+            "email": "info@multiotp.net"
+        }
+    ],
+    "funding": [
+        {
+            "url": "https://github.com/multiOTP",
+            "type": "github"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "multiOTP\\SMSGateway\\": "src/"
+        }
+    },
+    "license": "LGPL-3.0-only"
+}
