@@ -1,10 +1,10 @@
 # SMSGateway – A flat-file based SMS gateway PHP class using an open source Android app
 
 ## Features
-- SMS gateway using the open source Android application SMS Gateway (https://github.com/medic/cht-gateway)
+- SMS gateway using the open source Android app [SMS Gateway](https://github.com/medic/cht-gateway/releases/latest)
 
 ## License
-This software is distributed under the [ LGPL-3.0-only](https://www.gnu.org/licenses/lgpl-3.0.html) license. Please read [LICENSE](https://github.com/multiOTP/SMSGateway/blob/master/LICENSE) for information on the software availability and distribution.
+This software is distributed under the [LGPL-3.0-only](https://www.gnu.org/licenses/lgpl-3.0.html) license. Please read [LICENSE](https://github.com/multiOTP/SMSGateway/blob/master/LICENSE) for information on the software availability and distribution.
 
 ## Installation & loading
 SMSGateway is available on [Packagist](https://packagist.org/packages/multiOTP/SMSGateway) (using semantic versioning), and installation via [Composer](https://getcomposer.org) is the recommended way to install SMSGateway. Just add this line to your `composer.json` file:
@@ -48,11 +48,13 @@ $smsgateway = new SMSGateway();
 // Set the data folder
 $smsgateway->setDataPath(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR);
 
-$hash_secret = "secret";
+// Set the shared secret
+$smsgateway->setSharedSecret("secret");
+
 $device_id   = "demo";
 $to = "+1234567890";
 $message = "Demo message";
-$device_h = $smsgateway->calculateHash($hash_secret, $device_id);
+$device_h = $smsgateway->calculateAuthenticationHash($device_id);
 
 $message_id = $smsgateway->sendMessage($device_id, $to, $message);
 
@@ -68,15 +70,18 @@ use multiOTP\SMSGateway\SMSGateway;
 //Load Composer's autoloader
 require 'vendor/autoload.php';
 
+// Please note that implementing a new_message_handling callback function
+//  will flag the new messages as read when returning from the function.
 function new_message_handling($array) {
   // Handling $array of new received messages
-  // [["device_id"    => "device_id",
-  //   "id"           => "message_id",
-  //   "from"         => "from_phone",
-  //   "sms_sent"     => "sms_sent_timestamp",
-  //   "sms_received" => "sms_received_timestamp",
-  //   "content"      => "message_content",
-  //   "status"       => "message-status"
+  // [["device_id"    => "device id",
+  //   "message_id"   => "message id",
+  //   "from"         => "from phone number",
+  //   "sms_sent"     => "sms_sent timestamp (ms)",
+  //   "sms_received" => "sms_received timestamp (ms)",
+  //   "content"      => "message content",
+  //   "last_update"  => "last update timestamp (ms)",
+  //   "status"       => "UNREAD|READ"
   //  ],
   //  [...]
   // ]
@@ -84,9 +89,12 @@ function new_message_handling($array) {
 
 function update_handling($array) {
   // Handling $array of status updates for sent messages
-  // [["device_id"    => "device_id",
-  //   "message_id"   => "message_id",
-  //   "status"       => "message-status"
+  // [["device_id"    => "device id",
+  //   "message_id"   => "message id",
+  //   "to"           => "to phone number",
+  //   "content"      => "content",
+  //   "last_update"  => "last update timestamp (ms)",
+  //   "status"       => "NEW|PUSHED|PENDING|SENT|DELIVERED|FAILED"
   //  ],
   //  [...]
   // ]
@@ -110,5 +118,28 @@ $smsgateway->setDataPath(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPA
 // Launch the API server with callback functions definition
 $smsgateway->apiServer("secret", "new_message_handling", "update_handling", "timeout_handling");
 ```
+
+## SMS messages status
+
+### Received message
+- UNREAD: message has never been read on the gateway
+- READ: message has already been read on the gateway
+
+### Sent message
+- NEW: new created message, not transfered yet to the Android device
+- PUSHED: message pushed to the Android device
+- PENDING: message is pending in the Android device
+- SENT: message has been sent to the gateway's network
+- DELIVERED: message has been received by the recipient's phone
+- FAILED: message delivery has failed and will not be retried
+
+## Online demo
+A full working gateway implementation is available here : [Online SMSGateway demo](https://1-2-3-4-5-6.net/smsgateway/). Click the link and everything is self-explanatory. You will simply have to install and configure the companion open source Android app in order to send and receive SMS messages through this demo gateway (as explained after sending a first SMS message using the online demo gateway).
+
+## Documentation
+Example of how to use SMSGateway for a common scenario can be found in the [examples](https://github.com/multiOTP/SMSGateway/tree/master/examples) folder. If you're looking for a good starting point, we recommend you start with [the gateway example](https://github.com/multiOTP/SMSGateway/tree/master/examples/gateway.php).
+
+## Changelog
+See [CHANGELOG](CHANGELOG.md).
 
 That's it. You should now be ready to use SMSGateway!
