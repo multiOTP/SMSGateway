@@ -16,11 +16,11 @@
  *
  * The Readme file contains additional information.
  *
- * PHP 7.0.0 or higher is supported.
+ * PHP 5.3.0 or higher is supported.
  *
  * @author    Andre Liechti (SysCo systemes de communication sa) <info@multiotp.net>
- * @version   1.0.3
- * @date      2022-10-11
+ * @version   1.0.4
+ * @date      2022-10-13
  * @since     2022-09-10
  * @copyright (c) 2022 SysCo systemes de communication sa
  * @copyright GNU Lesser General Public License
@@ -52,47 +52,47 @@
  * Usage
  *
  *   Public methods available:
- *    setDataPath($data_path)
- *    getDataPath()
- *    setDeviceId($device_id)
- *    getDeviceId()
- *    setDeviceTimeout($device_timeout)
- *    getDeviceTimeout()
- *    setSuccessArchiveTime($success_archive_time)
- *    getSuccessArchiveTime()
- *    setPurgeArchiveTime($purge_archive_time)
- *    getPurgeArchiveTime()
- *    setDeviceFolder($device_folder)
- *    getDeviceFolder()
- *    getDeviceFolderLogs()
- *    getDeviceFolderSend()
- *    getDeviceFolderReceive()
- *    getDeviceFolderArchive()
- *    getDevicePathLogs()
- *    getDevicePathSend()
- *    getDevicePathReceive()
- *    getDevicePathArchive()
- *    handleMessages($post_data)
- *    handleUpdates($post_data)
- *    updateDataStructure($device_id)
- *    readNewMessages($device_id = "")
- *    readAllMessages($device_id = "")
- *    readMessage($device_id = "", $message_id = "*", $message_filter = "*")
- *    readAllSentStatus($device_id = "")
- *    readSentStatus($device_id = "", $message_id = "*", $message_filter = "*")
- *    sendMessage($device_id, $to, $content)
- *    reactivatePushedMessages($pushed_timeout = 0)
- *    getMessagesToSend($device_id = "")
- *    getTimeoutDevices()
- *    archiveSuccessMessages($device_id = "")
- *    purgeArchiveMessages($device_id = "")
- *    calculateHash($hash_secret, $device_id)
- *    writeLog($log_message)
- *    apiServer($hash_secret          = "",
- *              $new_message_callback = "",
+ *    apiServer($new_message_callback = "",
  *              $update_callback      = "",
  *              $timeout_callback     = "",
  *              $post_raw             = "")
+ *    archiveSuccessMessages($device_id = "")
+ *    calculateAuthenticationHash($device_id)
+ *    getDataPath()
+ *    getDeviceFolder()
+ *    getDeviceFolderArchive()
+ *    getDeviceFolderLogs()
+ *    getDeviceFolderReceive()
+ *    getDeviceFolderSend()
+ *    getDeviceId()
+ *    getDevicePathArchive()
+ *    getDevicePathLogs()
+ *    getDevicePathReceive()
+ *    getDevicePathSend()
+ *    getDeviceTimeout()
+ *    getMessagesToSend($device_id = "")
+ *    getPurgeArchiveTime()
+ *    getSuccessArchiveTime()
+ *    getTimeoutDevices()
+ *    getVersion()
+ *    handleMessages($post_data)
+ *    handleUpdates($post_data)
+ *    purgeArchiveMessages($device_id = "")
+ *    reactivatePushedMessages($pushed_timeout = 0)
+ *    readAllMessages($device_id = "")
+ *    readAllSentStatus($device_id = "")
+ *    readMessage($device_id = "", $message_id = "*", $message_filter = "*")
+ *    readNewMessages($device_id = "")
+ *    readSentStatus($device_id = "", $message_id = "*", $message_filter = "*")
+ *    sendMessage($device_id, $to, $content)
+ *    setDataPath($data_path)
+ *    setDeviceFolder($device_folder)
+ *    setDeviceId($device_id)
+ *    setDeviceTimeout($device_timeout)
+ *    setPurgeArchiveTime($purge_archive_time)
+ *    setSuccessArchiveTime($success_archive_time)
+ *    updateDataStructure($device_id)
+ *    writeLog($log_message)
  *
  *
  * Examples
@@ -102,11 +102,11 @@
  *   require_once('SMSGateway.php');
  *   $smsgateway = new SMSGateway();
  *   $smsgateway->setDataPath(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR);
- *   $hash_secret = "secret";
+ *   $smsgateway->setSharedSecret("secret");
  *   $device_id   = "demo";
  *   $to = "+1234567890";
  *   $message = "Demo message";
- *   $device_h = $smsgateway->calculateHash($hash_secret, $device_id);
+ *   $device_h = $smsgateway->calculateAuthenticationHash($device_id);
  *   $message_id = $smsgateway->sendMessage($device_id, $to, $message);
  *   echo "Full URL for Android app URL: https://......./?id=$device_id&h=$device_h";
  *
@@ -116,11 +116,13 @@
  *   require_once('SMSGateway.php');
  *   function new_message_handling($array) {
  *     // Handling $array
- *     //[["id"           => "message_id",
+ *     //[["device_id"    => "device_id",
+ *     //  "message_id"   => "message_id",
  *     //  "from"         => "from_phone",
  *     //  "sms_sent"     => "sms_sent_timestamp",
  *     //  "sms_received" => "sms_received_timestamp",
  *     //  "content"      => "message_content",
+ *     //  "last_update"  => "last update timestamp (ms)",
  *     //  "status"       => "message-status"
  *     // ],
  *     // [...]
@@ -128,25 +130,13 @@
  *   }
  *   $smsgateway = new SMSGateway();
  *   $smsgateway->setDataPath(__DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR);
- *   $smsgateway->apiServer("secret", "new_message_handling");
+ *   $smsgateway->apiServer("new_message_handling");
  *
  *
  * External device needed
  * 
  *   Android phone with SMS Gateway app installed
- *    (https://github.com/medic/cht-gateway)
- *
- *
- * Users feedbacks and comments
- *
- * 2022-10-11 SysCo/al (CH)
- *   First public version
- *
- *
- * Change Log
- *
- *   2022-10-11 1.0.3 SysCo/al First public version
- *   2022-09-10 0.0.1 SysCo/al Initial implementation
+ *    (https://github.com/medic/cht-gateway/releases/latest)
  *********************************************************************/
 
 namespace multiOTP\SMSGateway;
@@ -163,8 +153,8 @@ class SMSGateway
    *
    * @var string
    */
-  const VERSION = '1.0.3';
-  
+  const VERSION = '1.0.4';
+
   /**
    * The device timeout in seconds.
    * Default of 5 minutes (300sec).
@@ -172,7 +162,7 @@ class SMSGateway
    * @var int
    */
   private $DeviceTimeout = 300;
-  
+
   /**
    * The success archive time in seconds.
    * Default of 1 day (1 * 86400 sec).
@@ -180,7 +170,7 @@ class SMSGateway
    * @var int
    */
   private $SuccessArchiveTime = 1 * 86400;
-  
+
   /**
    * The purge archive time in seconds.
    * Default of 90 days (90 * 86400 sec).
@@ -188,7 +178,7 @@ class SMSGateway
    * @var int
    */
   private $PurgeArchiveTime = 90 * 86400;
-  
+
   /**
    * The purge log time in seconds.
    * Default of 365 days (365 * 86400 sec).
@@ -198,21 +188,28 @@ class SMSGateway
   private $PurgeLogTime = 365 * 86400;
 
   /**
-   * The flat-file based data path (with terminal directory separator)
+   * The flat-file based data path (with terminal directory separator).
    *
    * @var string
    */
   private $DataPath = '';
-  
+
   /**
-   * The Android device id
+   * The Android device id.
    *
    * @var string
    */
   private $DeviceId = '';
 
   /**
-   * The flat-file based device folder (without terminal directory separator)
+   * The shared secret to calculate hash authentication.
+   *
+   * @var string
+   */
+  private $SharedSecret = 'secret';
+
+  /**
+   * The flat-file based device folder (without terminal directory separator).
    *
    * @var string
    */
@@ -233,6 +230,22 @@ class SMSGateway
   public function __destruct()
   {
     // $this->...;
+  }
+
+  public function getVersion()
+  {
+    return self::VERSION;
+  }
+
+  private function getIPAddress() {  
+    if(!empty($_SERVER['HTTP_CLIENT_IP'])) {
+      $ip = $_SERVER['HTTP_CLIENT_IP'];
+    }  elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+      $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+      $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    return $ip;
   }
 
   /**
@@ -285,6 +298,27 @@ class SMSGateway
   public function getDeviceId()
   {
     return $this->DeviceId;
+  }
+  
+  /**
+   * Set shared secret.
+   *
+   * @param string $shared_secret The shared secret to calculate hash authentication
+   */
+  public function setSharedSecret(
+    $shared_secret
+  ) {
+    $this->SharedSecret = $shared_secret;
+  }
+
+  /**
+   * Get shared secret.
+   *
+   * @return string The Android device id (which is in the URL)
+   */
+  public function getSharedSecret()
+  {
+    return $this->SharedSecret;
   }
   
   public function setDeviceTimeout(
@@ -407,6 +441,7 @@ class SMSGateway
                                        "sms_sent"     => $sms_sent,
                                        "sms_received" => $sms_received,
                                        "content"      => $content,
+                                       "last_update"  => time() . "000",
                                        "status"       => "UNREAD"
                                       ]);
 
@@ -429,9 +464,19 @@ class SMSGateway
             if (isset($update["status"])) {
               $message_array = glob($this->getDevicePathSend() . $update["id"] . ".*");
               if (1 == count($message_array)) {
+                $extract_data = json_decode(file_get_contents($message_array[0]), true);
+                $content = "";
+                $to = "";
+                if (null != $extract_data) {
+                  $content = isset($extract_data["content"]) ? $extract_data["content"] : "";
+                  $to = isset($extract_data["to"]) ? $extract_data["to"] : "";
+                }
                 array_push($result_array, ["device_id"    => $this->getDeviceId(),
-                                           "message_id" => $update["id"],
-                                           "status"     => $update["status"]
+                                           "message_id"   => $update["id"],
+                                           "to"           => $to,
+                                           "content"      => $content,
+                                           "last_update"  => filemtime($message_array[0]) . "000",
+                                           "status"       => $update["status"]
                                           ]);
                 $updated_message = $this->getDevicePathSend() . $update["id"] . "." . $update["status"];
                 rename($message_array[0], $updated_message);
@@ -495,6 +540,9 @@ class SMSGateway
     }
     if ($this->updateDataStructure($device_id)) {
       $messages_new_array = glob($this->getDevicePathReceive() . "$message_id.$message_filter");
+      // Sort based on time, last update on the top
+      usort($messages_new_array, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
+      
       if (count($messages_new_array) > 0) {
         foreach($messages_new_array as $message) {
           $from = "";
@@ -526,6 +574,7 @@ class SMSGateway
                                      "sms_sent"     => $sms_sent,
                                      "sms_received" => $sms_received,
                                      "content"      => $content,
+                                     "last_update"  => filemtime($message) . "000",
                                      "status"       => pathinfo($message)['extension']
                                     ]);
           $message_read = str_replace(".UNREAD", ".READ", $message);
@@ -556,13 +605,25 @@ class SMSGateway
     }
     if ($this->updateDataStructure($device_id)) {
       $messages_new_array = glob($this->getDevicePathSend() . "$message_id.$message_filter");
+      // Sort based on time, last update on the top
+      usort($messages_new_array, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
       if (count($messages_new_array) > 0) {
         foreach($messages_new_array as $message) {
           $id = pathinfo($message)['filename'];
           $status = pathinfo($message)['extension'];
-          array_push($result_array, ["device_id"  => $device_id,
-                                     "message_id" => $id,
-                                     "status"     => $status
+          $extract_data = json_decode(file_get_contents($message), true);
+          $content = "";
+          $to = "";
+          if (null != $extract_data) {
+            $content = isset($extract_data["content"]) ? $extract_data["content"] : "";
+            $to = isset($extract_data["to"]) ? $extract_data["to"] : "";
+          }
+          array_push($result_array, ["device_id"   => $device_id,
+                                     "message_id"  => $id,
+                                     "to"          => $to,
+                                     "content"     => $content,
+                                     "last_update" => filemtime($message) . "000",
+                                     "status"      => $status
                                     ]);
         }
       }
@@ -581,7 +642,7 @@ class SMSGateway
     }
     if ($this->updateDataStructure($device_id)) {
       $escape_content = addcslashes($content, "\\\"\n");
-      $message_id = dechex(time())."-".str_replace(".","-", uniqid("", true));
+      $message_id = str_replace(".","-", uniqid("", true));
       $message_content = "{\"id\": \"$message_id\", \"to\": \"$to\", \"content\": \"$escape_content\"}";
       file_put_contents($this->getDevicePathSend() . $message_id . ".NEW", $message_content);
     }
@@ -615,6 +676,8 @@ class SMSGateway
     }
     if ($this->updateDataStructure($device_id)) {
       $messages_new_array = glob($this->getDevicePathSend() . "*.NEW");
+      // Sort based on time, older on top
+      usort($messages_new_array, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
       if (count($messages_new_array) > 0) {
         $result.= "\"messages\": [";
         foreach($messages_new_array as $message_new) {
@@ -637,6 +700,8 @@ class SMSGateway
     $result_array = array();
     if ($this->getDeviceTimeout() > 0) {
       $devices_array = glob($this->getDataPath() . "*");
+      // Sort based on time, older on top
+      usort($devices_array, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
       foreach($devices_array as $device) {
         if (is_dir($device) && ("." != $device) && (".." != $device)) {
           $last_update = filemtime($device);
@@ -751,7 +816,7 @@ class SMSGateway
     $result = false;
     if (("" != $this->getDeviceFolder()) && file_exists($this->getDeviceFolderLogs())) {
       file_put_contents($this->getDevicePathLogs() . date("Y-m-d").".log",
-                        date("Y-m-d H:i:s") . " " . $log_message."\n",
+                        date("Y-m-d H:i:s") . " " . $this->getIPAddress() . " " . $log_message."\n",
                         FILE_APPEND
                        );
       $result = true;
@@ -759,37 +824,35 @@ class SMSGateway
     return $result;
   }
 
-  public function calculateHash(
-    $hash_secret,
+  public function calculateAuthenticationHash(
     $device_id
   ) {
-    return substr(strtolower(md5($hash_secret . "#salt@" . $device_id)), 0, 6);
+    return substr(strtolower(md5($this->getSharedSecret() . "#salt@" . $device_id)), 0, 6);
   }
 
   /**
    * Main API server, which displays directly the necessary information
    *
-   * @param string $hash_secret The hash secret (calculated with calculateHash)
    * @param string $new_message_callback Callback action for new message 
    * @param string $update_callback Callback action for updated status
    * @param string $timeout_callback Callback action for timeout detection
    * @param string $post_raw Forced raw post data (mainly for debugging and tests)
    */
   public function apiServer(
-    $hash_secret = "",
     $new_message_callback = NULL,
     $update_callback = NULL,
     $timeout_callback = NULL,
     $post_raw = ""
   ) {
     $response_code = 200;
-    $response = "";
-    $device_h =  isset($_GET["h"])  ? $_GET["h"]  : '';
+    $response      = "";
+
     $device_id = isset($_GET["id"]) ? $_GET["id"] : '';
+    $device_h =  isset($_GET["h"])  ? $_GET["h"]  : '';
     
     if ("" == $device_id) {
       $response_code = 404;
-    } elseif (("" != $hash_secret) && ($device_h != $this->calculateHash($hash_secret, $device_id))) {
+    } elseif (($device_h != $this->calculateAuthenticationHash($device_id))) {
       $response_code = 401;
       $device_id = "";
     }
