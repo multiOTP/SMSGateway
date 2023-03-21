@@ -1,6 +1,6 @@
 # SMSGateway Change Log
 
-## Version 1.1.0 (2023-03-21)
+## Version 1.0.6 (2023-03-21)
 
 ### Enhancements
 * Enhanced gateway example
