@@ -132,12 +132,32 @@ $smsgateway->apiServer("secret", "new_message_handling", "update_handling", "tim
 - SENT: message has been sent to the gateway's network
 - DELIVERED: message has been received by the recipient's phone
 - FAILED: message delivery has failed and will not be retried
+- MISSING: message with this message id is missing, no state available
 
 ## Online demo
-A full working gateway implementation is available here : [Online SMSGateway demo](https://1-2-3-4-5-6.net/smsgateway/). Click the link and everything is self-explanatory. You will simply have to install and configure the companion open source Android app in order to send and receive SMS messages through this demo gateway (as explained after sending a first SMS message using the online demo gateway).
+A full working gateway implementation is available here : [Online SMSGateway demo](https://1-2-3-4-5-6.net/smsgateway/). Click the link and everything is self-explanatory. You will simply have to install and configure the companion open source Android app in order to send and receive SMS messages through this demo gateway (as explained after sending a first SMS message using the online demo gateway).  
+When sending a message, the following information will be returned in the http header and in the html meta tags:
+- X-SMSGateway-State: state of the sent message (NEW|FAILED)
+- X-SMSGateway-State-Url: full url to check the state of the message
+- X-SMSGateway-Message-Id: message id
 
 ## Documentation
 Example of how to use SMSGateway for a common scenario can be found in the [examples](https://github.com/multiOTP/SMSGateway/tree/master/examples) folder. If you're looking for a good starting point, we recommend you start with [the gateway example](https://github.com/multiOTP/SMSGateway/tree/master/examples/gateway.php).
+
+## Android specific parameters
+Using adb shell, you should change these two parameters:
+- sms_outgoing_check_max_count
+- sms_outgoing_check_interval_ms
+
+Example for a limit of 200 messages per minute:
+
+```
+adb shell
+settings put global sms_outgoing_check_max_count 200
+settings put global sms_outgoing_check_interval_ms 60000
+```
+
+You need to reboot your Android phone. after these changes
 
 ## Changelog
 See [CHANGELOG](CHANGELOG.md).

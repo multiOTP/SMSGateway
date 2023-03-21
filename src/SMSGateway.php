@@ -19,8 +19,8 @@
  * PHP 5.3.0 or higher is supported.
  *
  * @author    Andre Liechti (SysCo systemes de communication sa) <info@multiotp.net>
- * @version   1.0.4
- * @date      2022-10-13
+ * @version   1.0.5
+ * @date      2022-10-17
  * @since     2022-09-10
  * @copyright (c) 2022 SysCo systemes de communication sa
  * @copyright GNU Lesser General Public License
@@ -81,6 +81,7 @@
  *    reactivatePushedMessages($pushed_timeout = 0)
  *    readAllMessages($device_id = "")
  *    readAllSentStatus($device_id = "")
+ *    readAllArchivedStatus($device_id = "")
  *    readMessage($device_id = "", $message_id = "*", $message_filter = "*")
  *    readNewMessages($device_id = "")
  *    readSentStatus($device_id = "", $message_id = "*", $message_filter = "*")
@@ -153,7 +154,7 @@ class SMSGateway
    *
    * @var string
    */
-  const VERSION = '1.0.4';
+  const VERSION = '1.0.5';
 
   /**
    * The device timeout in seconds.
@@ -490,7 +491,8 @@ class SMSGateway
   }
 
   public function updateDataStructure(
-    $device_id
+    $device_id,
+    $touch = true
   ) {
     $result = false;
     $this->setDeviceId($device_id);
@@ -499,7 +501,9 @@ class SMSGateway
       if (!file_exists($this->getDeviceFolder())) {
         mkdir($this->getDeviceFolder());
       }
-      touch($this->getDeviceFolder());
+      if ($touch) {
+        touch($this->getDeviceFolder());
+      }
       if (!file_exists($this->getDeviceFolderLogs())) {
         mkdir($this->getDeviceFolderLogs());
       }
@@ -588,6 +592,12 @@ class SMSGateway
     return $result_array;
   }
 
+  public function readAllArchivedStatus(
+    $device_id = ""
+  ) {
+    return $this->readSentStatus($device_id, "*", "*", $this->getDevicePathArchive());
+  }
+
   public function readAllSentStatus(
     $device_id = ""
   ) {
@@ -597,14 +607,18 @@ class SMSGateway
   public function readSentStatus(
     $device_id = "",
     $message_id = "*",
-    $message_filter = "*"
+    $message_filter = "*",
+    $message_folder = ""
   ) {
     $result_array = array();
     if (empty($device_id)) {
       $device_id = $this->getDeviceId();
     }
+    if (empty($message_folder)) {
+      $message_folder = $this->getDevicePathSend();
+    }
     if ($this->updateDataStructure($device_id)) {
-      $messages_new_array = glob($this->getDevicePathSend() . "$message_id.$message_filter");
+      $messages_new_array = glob($message_folder . "$message_id.$message_filter");
       // Sort based on time, last update on the top
       usort($messages_new_array, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
       if (count($messages_new_array) > 0) {
