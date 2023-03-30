@@ -1,6 +1,6 @@
 # SMSGateway Change Log
 
-## Version 1.0.7 (2023-03-30)
+## Version 1.0.8 (2023-03-30)
 
 ### Fixed bugs
 * Better json decoding, ignoring chr(13)

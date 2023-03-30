@@ -19,7 +19,7 @@
  * PHP 5.3.0 or higher is supported.
  *
  * @author    Andre Liechti (SysCo systemes de communication sa) <info@multiotp.net>
- * @version   1.0.7
+ * @version   1.0.8
  * @date      2023-03-30
  * @since     2022-09-10
  * @copyright (c) 2022-2023 SysCo systemes de communication sa
@@ -421,7 +421,7 @@ class SMSGateway
     $post_data
   ) {
     $result_array = array();
-    $extract_data = json_decode($post_data, true);
+    $extract_data = json_decode(str_replace(chr(13), "", $post_data), true);
     if (null != $extract_data) {
       if (isset($extract_data["messages"])) {
         foreach($extract_data["messages"] as $message) {
@@ -457,7 +457,7 @@ class SMSGateway
     $post_data
   ) {
     $result_array = array();
-    $extract_data = json_decode($post_data, true);
+    $extract_data = json_decode(str_replace(chr(13), "", $post_data), true);
     if (null != $extract_data) {
       if (isset($extract_data["updates"])) {
         foreach($extract_data["updates"] as $update) {
@@ -465,7 +465,7 @@ class SMSGateway
             if (isset($update["status"])) {
               $message_array = glob($this->getDevicePathSend() . $update["id"] . ".*");
               if (1 == count($message_array)) {
-                $extract_data = json_decode(file_get_contents($message_array[0]), true);
+                $extract_data = json_decode(str_replace(chr(13), "", file_get_contents($message_array[0])), true);
                 $content = "";
                 $to = "";
                 if (null != $extract_data) {
@@ -481,6 +481,7 @@ class SMSGateway
                                           ]);
                 $updated_message = $this->getDevicePathSend() . $update["id"] . "." . $update["status"];
                 rename($message_array[0], $updated_message);
+                touch($updated_message);
               }
             }
           }
