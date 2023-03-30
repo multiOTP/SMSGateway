@@ -19,17 +19,17 @@
  * PHP 5.3.0 or higher is supported.
  *
  * @author    Andre Liechti (SysCo systemes de communication sa) <info@multiotp.net>
- * @version   1.0.5
- * @date      2022-10-17
+ * @version   1.0.7
+ * @date      2023-03-30
  * @since     2022-09-10
- * @copyright (c) 2022 SysCo systemes de communication sa
+ * @copyright (c) 2022-2023 SysCo systemes de communication sa
  * @copyright GNU Lesser General Public License
  *
  *//*
  *
  * LICENCE
  *
- *   Copyright (c) 2022 SysCo systemes de communication sa
+ *   Copyright (c) 2022-2023 SysCo systemes de communication sa
  *   SysCo (tm) is a trademark of SysCo systemes de communication sa
  *   (http://www.sysco.ch/)
  *   All rights reserved.
@@ -154,7 +154,7 @@ class SMSGateway
    *
    * @var string
    */
-  const VERSION = '1.0.5';
+  const VERSION = '1.0.6';
 
   /**
    * The device timeout in seconds.
@@ -625,12 +625,14 @@ class SMSGateway
         foreach($messages_new_array as $message) {
           $id = pathinfo($message)['filename'];
           $status = pathinfo($message)['extension'];
-          $extract_data = json_decode(file_get_contents($message), true);
+          $extract_data = json_decode(str_replace(chr(13), "", file_get_contents($message)), true);
           $content = "";
           $to = "";
           if (null != $extract_data) {
             $content = isset($extract_data["content"]) ? $extract_data["content"] : "";
             $to = isset($extract_data["to"]) ? $extract_data["to"] : "";
+          } else {
+            $content = "DEBUG: ".json_last_error_msg();
           }
           array_push($result_array, ["device_id"   => $device_id,
                                      "message_id"  => $id,
@@ -858,6 +860,7 @@ class SMSGateway
     $timeout_callback = NULL,
     $post_raw = ""
   ) {
+    
     $response_code = 200;
     $response      = "";
 
@@ -888,7 +891,6 @@ class SMSGateway
         $this->reactivatePushedMessages($this->getDeviceTimeout());
 
         $response = $this->getMessagesToSend();
-        
         if (is_callable($new_message_callback)) {
           if (count($new_messages_array) > 0) {
             $new_message_callback($new_messages_array);
