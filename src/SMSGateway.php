@@ -546,8 +546,7 @@ class SMSGateway
     if ($this->updateDataStructure($device_id)) {
       $messages_new_array = glob($this->getDevicePathReceive() . "$message_id.$message_filter");
       // Sort based on time, last update on the top
-      usort($messages_new_array, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
-      
+	  usort($messages_new_array, function($a,$b){ return filemtime($b) - filemtime($a);});      
       if (count($messages_new_array) > 0) {
         foreach($messages_new_array as $message) {
           $from = "";
@@ -621,8 +620,8 @@ class SMSGateway
     if ($this->updateDataStructure($device_id)) {
       $messages_new_array = glob($message_folder . "$message_id.$message_filter");
       // Sort based on time, last update on the top
-      usort($messages_new_array, create_function('$a,$b', 'return filemtime($b) - filemtime($a);'));
-      if (count($messages_new_array) > 0) {
+	  usort($messages_new_array, function($a,$b){ return filemtime($b) - filemtime($a);});
+	  if (count($messages_new_array) > 0) {
         foreach($messages_new_array as $message) {
           $id = pathinfo($message)['filename'];
           $status = pathinfo($message)['extension'];
@@ -694,8 +693,8 @@ class SMSGateway
     if ($this->updateDataStructure($device_id)) {
       $messages_new_array = glob($this->getDevicePathSend() . "*.NEW");
       // Sort based on time, older on top
-      usort($messages_new_array, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
-      if (count($messages_new_array) > 0) {
+	  usort($messages_new_array, function($a,$b){ return filemtime($a) - filemtime($b);});
+	  if (count($messages_new_array) > 0) {
         $result.= "\"messages\": [";
         foreach($messages_new_array as $message_new) {
 
@@ -718,8 +717,8 @@ class SMSGateway
     if ($this->getDeviceTimeout() > 0) {
       $devices_array = glob($this->getDataPath() . "*");
       // Sort based on time, older on top
-      usort($devices_array, create_function('$a,$b', 'return filemtime($a) - filemtime($b);'));
-      foreach($devices_array as $device) {
+	  usort($devices_array, function($a,$b){ return filemtime($a) - filemtime($b);});
+	  foreach($devices_array as $device) {
         if (is_dir($device) && ("." != $device) && (".." != $device)) {
           $last_update = filemtime($device);
           if (time() > ($last_update + $this->getDeviceTimeout())) {
