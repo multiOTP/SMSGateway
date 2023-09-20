@@ -1,5 +1,10 @@
 # SMSGateway Change Log
 
+## Version 1.0.9 (2023-09-20)
+
+### Fixed bugs
+* PHP 8.1 fix  (thanks to ratmole)
+
 ## Version 1.0.8 (2023-03-30)
 
 ### Fixed bugs

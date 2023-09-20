@@ -19,8 +19,8 @@
  * PHP 5.3.0 or higher is supported.
  *
  * @author    Andre Liechti (SysCo systemes de communication sa) <info@multiotp.net>
- * @version   1.0.8
- * @date      2023-03-30
+ * @version   1.0.9
+ * @date      2023-09-20
  * @since     2022-09-10
  * @copyright (c) 2022-2023 SysCo systemes de communication sa
  * @copyright GNU Lesser General Public License
@@ -154,7 +154,7 @@ class SMSGateway
    *
    * @var string
    */
-  const VERSION = '1.0.6';
+  const VERSION = '1.0.9';
 
   /**
    * The device timeout in seconds.

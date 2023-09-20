@@ -4,7 +4,7 @@
 - SMS gateway using the open source Android app [SMS Gateway](https://github.com/medic/cht-gateway/releases/latest)
 
 ## License
-This software is distributed under the [LGPL-3.0-only](https://www.gnu.org/licenses/lgpl-3.0.html) license. Please read [LICENSE](https://github.com/multiOTP/SMSGateway/blob/master/LICENSE) for information on the software availability and distribution.
+This software is distributed under the [LGPL-3.0-only](https://www.gnu.org/licenses/lgpl-3.0.html) license. Please read [LICENSE](https://github.com/multiOTP/SMSGateway/blob/main/LICENSE) for information on the software availability and distribution.
 
 ## Installation & loading
 SMSGateway is available on [Packagist](https://packagist.org/packages/multiOTP/SMSGateway) (using semantic versioning), and installation via [Composer](https://getcomposer.org) is the recommended way to install SMSGateway. Just add this line to your `composer.json` file:
@@ -142,7 +142,7 @@ When sending a message, the following information will be returned in the http h
 - X-SMSGateway-Message-Id: message id
 
 ## Documentation
-Example of how to use SMSGateway for a common scenario can be found in the [examples](https://github.com/multiOTP/SMSGateway/tree/master/examples) folder. If you're looking for a good starting point, we recommend you start with [the gateway example](https://github.com/multiOTP/SMSGateway/tree/master/examples/gateway.php).
+Example of how to use SMSGateway for a common scenario can be found in the [examples](https://github.com/multiOTP/SMSGateway/tree/main/examples) folder. If you're looking for a good starting point, we recommend you start with [the gateway example](https://github.com/multiOTP/SMSGateway/tree/main/examples/gateway.php).
 
 ## Android specific parameters
 Using adb shell, you should change these two parameters:
