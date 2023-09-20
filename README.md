@@ -1,7 +1,7 @@
 # SMSGateway – A flat-file based SMS gateway PHP class using an open source Android app
 
 ## Features
-- SMS gateway using the open source Android app [SMS Gateway](https://github.com/medic/cht-gateway/releases/latest)
+- SMS gateway using the open source Android app [SMS Gateway](https://github.com/medic/cht-gateway/releases/latest) - use the generic release
 
 ## License
 This software is distributed under the [LGPL-3.0-only](https://www.gnu.org/licenses/lgpl-3.0.html) license. Please read [LICENSE](https://github.com/multiOTP/SMSGateway/blob/main/LICENSE) for information on the software availability and distribution.
